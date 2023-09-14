@@ -5,9 +5,11 @@ import (
 	"compress/gzip"
 	"context"
 	"crypto/tls"
+	"errors"
 	"fmt"
 	"io"
 	"log"
+	"net/http"
 	"net/url"
 	"os"
 	"time"
@@ -31,26 +33,19 @@ func main() {
 
 	}()
 	urlArgs := os.Args
-	//checks url iis valid
+	//checks url is valid
 	url, err := url.ParseRequestURI(urlArgs[1])
 	if err != nil {
 		log.Fatal("not a valid url")
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	//http client framework to manage http requests
-	client := resty.New()
 
-	client.SetTLSClientConfig(&tls.Config{
-		InsecureSkipVerify: true,
-	})
-	_, err = client.R().SetContext(ctx).SetOutput(OUTPUT_HTML_FILE).Get(url.String())
-	if err != nil {
-		if ctx.Err() == context.DeadlineExceeded {
-			log.Fatal("request timed out")
-
+	if _, err := FetchAndSetOutput(ctx, url.String(), OUTPUT_HTML_FILE); err != nil {
+		if ctx.Err() != context.DeadlineExceeded {
+			log.Fatal("error fetching details")
 		}
-		log.Fatal("error fetching details", err)
+		log.Fatal(err)
 	}
 
 	fmt.Println("fetched and stored webpage data")
@@ -64,6 +59,21 @@ func main() {
 	fmt.Println("Before Compression ", fileHtml.Size())
 	fileZip := utils.CheckFile(zipFile)
 	fmt.Println("After compression", fileZip.Size())
+
+}
+
+func FetchAndSetOutput(ctx context.Context, url string, outPutFile string) (int, error) {
+	client := resty.New().SetTLSClientConfig(&tls.Config{
+		InsecureSkipVerify: true,
+	})
+	resp, err := client.R().SetContext(ctx).SetOutput(outPutFile).Get(url)
+	if err != nil {
+		if ctx.Err() == context.DeadlineExceeded {
+			return http.StatusRequestTimeout, errors.New("request timed out")
+		}
+		return resp.StatusCode(), err
+	}
+	return resp.StatusCode(), nil
 
 }
 
