@@ -59,11 +59,12 @@ func main() {
 }
 
 // CheckDates two Date Arguments and HolidayList returns error if error is there
-//else provides valid holidaycount
+// else provides valid holidaycount
 func CheckDates(startDate, endDate time.Time, holidayMap map[time.Time]bool) (int, error) {
 	countWeekends := 0
+	//checks if given time is valid or not
 	if startDate.IsZero() || endDate.IsZero() {
-		return 0,errors.New("please provide valid time")
+		return 0, errors.New("please provide valid time")
 
 	}
 	if endDate.Before(startDate) {

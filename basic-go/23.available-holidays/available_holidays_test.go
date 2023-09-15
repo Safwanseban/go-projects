@@ -85,11 +85,9 @@ func TestCheckDate(t *testing.T) {
 
 			holidays, err := CheckDates(tc.args.startDate, tc.args.endDate, tc.args.holidayMap)
 			if err != nil {
-
 				require.EqualError(t, tc.expectedError, err.Error())
 			} else if holidays != tc.expectedResponse {
 				require.NotEqual(t, tc.expectedResponse, holidays)
-
 			} else {
 				require.Equal(t, tc.expectedResponse, holidays)
 			}
