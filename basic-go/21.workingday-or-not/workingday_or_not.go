@@ -9,6 +9,15 @@ import (
 	"time"
 )
 
+/*
+
+Assignment:21
+Program prompts for user to enter the holiday date in the format of 02 jan till done command.
+then prompts to check a date to check weather it is a working day or not.
+checks date is weekend or a date that is part of holiday list then returns the result
+
+*/
+
 func main() {
 
 	holidayMap := make(map[time.Time]bool)
@@ -31,7 +40,28 @@ func main() {
 	if err != nil {
 		log.Fatal("error reading data")
 	}
+	//checks holiday or not
+	if !isHoliday(checkDate, holidayMap) {
+		fmt.Println("entered date is a working day")
+		return
+	}
+	fmt.Println("entered date is not a working day")
 
+}
+
+// isHoliday checks given date is holiday or not
+func isHoliday(checkDate time.Time, holidayList map[time.Time]bool) bool {
+	if checkDate.Weekday() == time.Saturday ||
+		checkDate.Weekday() == time.Sunday || holidayList[removeYear(checkDate)] {
+		return true
+	}
+	return false
+
+}
+
+// removeYear removes year from a given date
+func removeYear(checkDate time.Time) time.Time {
+	var err error
 	day := strconv.Itoa(checkDate.Day())
 	if len(day) == 1 {
 		day = "0" + day
@@ -41,20 +71,5 @@ func main() {
 		log.Fatal("error parsing date", err)
 
 	}
-
-	if !isWeekend(checkDate, holidayMap) {
-		fmt.Println("entered date is a working day")
-		return
-	}
-	fmt.Println("entered date is not a working day")
-
-}
-func isWeekend(checkDate time.Time, holidayList map[time.Time]bool) bool {
-
-	if checkDate.Weekday() == time.Saturday ||
-		checkDate.Weekday() == time.Sunday || holidayList[checkDate] {
-		return true
-	}
-	return false
-
+	return checkDate
 }

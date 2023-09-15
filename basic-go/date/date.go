@@ -11,23 +11,27 @@ import (
 type date string
 
 const (
-	DD_MM_YY   date = "02-01-2006"
-	DATE_MONTH date = "02 Jan"
+	DD_MM_YY        date = "02-01-2006"
+	DATE_MONTH      date = "02 Jan"
 	DATE_MONTH_FULL date = "02 January"
 )
 
+// GetInputDate reads cli data and returns response in given
+// date format
 func GetInputDate(format date) (time.Time, error) {
 
 	reader := bufio.NewReader(os.Stdin)
 	input, err := reader.ReadString('\n')
 	input = strings.TrimSpace(input)
-	if err != nil  {
+	if err != nil {
 		return time.Time{}, err
 	}
 
 	return time.Parse(string(format), input)
 
 }
+
+// DateDiffrence returns diffrence between two dates
 func DateDiffrence(t1, t2 time.Time) string {
 	duration := t2.Sub(t1)
 	result := ""
