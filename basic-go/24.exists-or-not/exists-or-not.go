@@ -23,6 +23,8 @@ func main() {
 
 }
 
+// inputTillDone inputs data from cli till
+// done command given
 func inputTillDone() map[string]bool {
 	listMap := make(map[string]bool)
 	reader := bufio.NewReader(os.Stdin)

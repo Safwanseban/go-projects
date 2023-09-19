@@ -21,6 +21,13 @@ func TestReadAndPut(t *testing.T) {
 			ExpectResult: nil,
 		},
 		{
+			Name:        "error- not supported format",
+			FileInput:   "./newfile.pdf",
+			ExpectError: errors.New("not supported file extension"),
+			ExpectResult:nil,
+		},
+
+		{
 			Name:        "success",
 			FileInput:   "./file.txt",
 			ExpectError: nil,

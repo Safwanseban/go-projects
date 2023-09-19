@@ -24,13 +24,11 @@ const (
 func main() {
 	//if no url provided panic occures recover panic situation
 	defer func() {
-
 		if r := recover(); r != nil {
 			if _, ok := r.(error); ok {
 				log.Println("no valid url provided")
 			}
 		}
-
 	}()
 	urlArgs := os.Args
 	//checks url is valid
@@ -38,6 +36,7 @@ func main() {
 	if err != nil {
 		log.Fatal("not a valid url")
 	}
+	//creating context with a timeout if timedOut throws timeOut error
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -62,6 +61,8 @@ func main() {
 
 }
 
+// FetchAndSetOutput creates a http client and fetches the given URL then
+// put the output into given directory
 func FetchAndSetOutput(ctx context.Context, url string, outPutFile string) (int, error) {
 	client := resty.New().SetTLSClientConfig(&tls.Config{
 		InsecureSkipVerify: true,

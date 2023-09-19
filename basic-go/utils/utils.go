@@ -8,7 +8,9 @@ import (
 	"strings"
 )
 
-func Handle_error(ErrMessage string, err error) {
+// Handle_Error handles error with erroMessage
+// and error
+func Handle_Error(ErrMessage string, err error) {
 	if err != nil {
 		log.Fatal(ErrMessage, " "+err.Error())
 	}
@@ -25,6 +27,8 @@ func GetInput() (string, error) {
 
 }
 
+// CheckFile takes fileinput and cheks if it
+// is avaliable or not
 func CheckFile(file string) fs.FileInfo {
 
 	fileName, err := os.Stat(file)

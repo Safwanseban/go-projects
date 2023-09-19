@@ -49,8 +49,10 @@ func TestReadAndCompress(t *testing.T) {
 }
 
 func TestFetchAndSetOuput(t *testing.T) {
+	//creates a mockServer and a Handler function,Handler function mocks the output
+	//given by actual server
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
+		//parsing html file and creating output
 		tpl := template.Must(template.ParseFiles("testdata/test.html"))
 		tpl.ExecuteTemplate(w, "test.html", nil)
 	}))
@@ -91,10 +93,8 @@ func TestFetchAndSetOuput(t *testing.T) {
 
 			code, err := FetchAndSetOutput(context.Background(), tc.inputUrl, tc.outPutFile)
 			if err != nil {
-
 				require.EqualError(t, tc.expectedError, err.Error())
 			} else {
-
 				require.Equal(t, tc.expectStatusCode, code)
 			}
 		})

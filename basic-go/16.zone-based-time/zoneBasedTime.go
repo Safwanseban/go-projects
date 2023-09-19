@@ -1,31 +1,37 @@
-
 package main
 
 import (
+	"basic-go/utils"
 	"fmt"
+	"log"
 	"time"
 )
 
-type date string
-
-const (
-	DATE_MONTH_YEAR       date = "02 Jan 2006"
-	MONTH_DATE_YEAR       date = "Jan 02 2006"
-	YY_MM_DD              date = "2006-01-02"
-	ZONE_TIME_FORMAT      date = "2006-01-02T15:04:05Z"
-	DATE_NDATE_MONTH_YEAR date = "Monday, 02 January 2006"
-)
-
-func main() {
-	fmt.Println(getFormattedTime(string(DATE_MONTH_YEAR)))
-	fmt.Println(getFormattedTime(string(MONTH_DATE_YEAR)))
-	fmt.Println(getFormattedTime(string(YY_MM_DD)))
-	fmt.Println(getFormattedTime(string(ZONE_TIME_FORMAT)))
-	fmt.Println(getFormattedTime(string(DATE_NDATE_MONTH_YEAR)))
+var ValidTimeZones = map[string]bool{
+	"Asia/Kolkata":     true,
+	"Asia/Dubai":       true,
+	"America/New_York": true,
+	"Europe/London":    true,
 }
 
-func getFormattedTime(layout string) string {
+func main() {
+	fmt.Println("available time zones are")
+	for zones := range ValidTimeZones {
+		fmt.Println(zones)
 
-	return time.Now().Format(layout)
+	}
+	fmt.Println("enter a location from the above")
+	location, err := utils.GetInput()
+	if err != nil {
+		log.Fatal("error getting input")
+	}
+	if !ValidTimeZones[location] {
+		log.Fatal("enter a timezone listed from the above")
+	}
+	loc, err := time.LoadLocation(location)
+	if err != nil {
+		log.Fatal("error loading location")
+	}
+	fmt.Println(time.Now().In(loc))
 
 }

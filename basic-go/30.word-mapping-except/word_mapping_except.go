@@ -2,13 +2,12 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"log"
 	"os"
 	"strings"
 )
-
-
 
 func main() {
 
@@ -18,13 +17,24 @@ func main() {
 		log.Fatal("file not found ")
 	}
 	fmt.Println(fileInfo.Name())
-	fmt.Println(readAndPut(fileInfo.Name())) //reading and putting data to hashmap based on words
-
+	data, err := readAndPut(fileInfo.Name()) //reading and putting data to hashmap based on words
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(data)
 }
-//readAndPut
+
+// readAndPut reads data from file and put data in hashMap
 func readAndPut(fileData string) (map[string]int, error) {
 	wordMap := make(map[string]int)
 	file, err := os.Open(fileData)
+	if err != nil {
+		return nil, err
+	}
+	extensionCheck := strings.Split(file.Name(), ".")
+	if extensionCheck[len(extensionCheck)-1] != "txt" {
+		return nil, errors.New("not supported file extension")
+	}
 	if err != nil {
 		return nil, err
 	}
