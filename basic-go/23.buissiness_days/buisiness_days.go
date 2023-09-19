@@ -56,9 +56,9 @@ func CheckDates(inputDate time.Time, buissinessDays int, holidayMap map[time.Tim
 	if buissinessDays > 0 {
 		for i := buissinessDays; i > 0; {
 			inputDate = inputDate.AddDate(0, 0, 1)
-			if buissinessDays%5==0{
-				inputDate=inputDate.AddDate(0,0,7)
-				i-=5
+			if buissinessDays%5 == 0 {
+				inputDate = inputDate.AddDate(0, 0, 7)
+				i -= 5
 				continue
 			}
 			if isHoliday(inputDate, holidayMap) {
@@ -71,6 +71,11 @@ func CheckDates(inputDate time.Time, buissinessDays int, holidayMap map[time.Tim
 	} else if buissinessDays < 0 {
 		for i := buissinessDays; i < 0; {
 			inputDate = inputDate.AddDate(0, 0, -1)
+			if buissinessDays%5 == 0 {
+				inputDate = inputDate.AddDate(0, 0, 7)
+				i -= 5
+				continue
+			}
 			if isHoliday(inputDate, holidayMap) {
 				continue
 			}

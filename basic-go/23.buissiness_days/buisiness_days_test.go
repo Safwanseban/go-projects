@@ -61,15 +61,15 @@ func TestCheckDates(t *testing.T) {
 			expectedResult: "18-09-2023",
 		},
 		{
-			name: "result- no only holiday provided",
+			name: "success- higher business days",
 			args: args{
 				inputDate: time.Date(2023, time.September, 15, 0, 0, 0, 0, time.Local),
 				holidayMap: map[time.Time]bool{
-					parseTime("15 sep"): true,
+					parseTime("28 sep"): true,
 				},
 				BuissinessDays: 12,
 			},
-			expectedResult: "18-09-2023",
+			expectedResult: "04-10-2023",
 		},
 
 		{
