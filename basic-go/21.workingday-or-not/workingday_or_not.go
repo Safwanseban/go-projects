@@ -9,14 +9,10 @@ import (
 	"time"
 )
 
-/*
-
-Assignment:21
-Program prompts for user to enter the holiday date in the format of 02 jan till done command.
-then prompts to check a date to check weather it is a working day or not.
-checks date is weekend or a date that is part of holiday list then returns the result
-
-*/
+// Assignment:21
+// Program prompts for user to enter the holiday date in the format of 02 jan till done command.
+// then prompts to check a date to check weather it is a working day or not.
+// checks date is weekend or a date that is part of holiday list then returns the result
 
 func main() {
 

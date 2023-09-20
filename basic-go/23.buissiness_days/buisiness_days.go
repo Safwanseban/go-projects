@@ -47,7 +47,7 @@ func main() {
 	}
 	fmt.Println(CheckDates(inputDate, buissinessDay, holidayMap))
 }
-
+//CheckDates returns the relative day after comparing given inputDate and business days
 func CheckDates(inputDate time.Time, buissinessDays int, holidayMap map[time.Time]bool) (string, error) {
 	if inputDate.IsZero() {
 		return "", errors.New("provide valid time")

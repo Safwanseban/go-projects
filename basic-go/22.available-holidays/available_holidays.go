@@ -10,12 +10,10 @@ import (
 	"time"
 )
 
-/*
-Assignment 23:
-Program prompts for user to enter the holiday date in the format of 02 jan till done command.
-Data is been appended to a holidayMap and new prompt for startDate and EndDate is given.
-loops from startDate to EndDate, doing so checks the date is holiday or not and counts the holidayDays.
-*/
+//Assignment 23:
+//Program prompts for user to enter the holiday date in the format of 02 jan till done command.
+//Data is been appended to a holidayMap and new prompt for startDate and EndDate is given.
+//loops from startDate to EndDate, doing so checks the date is holiday or not and counts the holidayDays.
 
 func main() {
 	holidayMap := make(map[time.Time]bool)
@@ -58,7 +56,7 @@ func main() {
 
 }
 
-// CheckDates two Date Arguments and HolidayList returns error if error is there
+// CheckDates takes two Date Arguments and HolidayList returns error if error is there,
 // else provides valid holidaycount
 func CheckDates(startDate, endDate time.Time, holidayMap map[time.Time]bool) (int, error) {
 	countWeekends := 0
