@@ -1,0 +1,2 @@
+Port: ":3000"
+userAuthUrl: "localhost:5051"
