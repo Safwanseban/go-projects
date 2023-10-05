@@ -12,7 +12,13 @@ type AuthHandler struct {
 	AuthClient interfaces.AuthClient
 }
 
-func (s AuthHandler) Register(ctx *gin.Context) {
+func NewAuthHandler(client interfaces.AuthClient) *AuthHandler {
+	return &AuthHandler{
+		AuthClient: client,
+	}
+}
+
+func (s *AuthHandler) Register(ctx *gin.Context) {
 
 	var user types.User
 	if err := ctx.ShouldBindJSON(&user); err != nil {

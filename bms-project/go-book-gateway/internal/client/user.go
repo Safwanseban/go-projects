@@ -42,7 +42,7 @@ func (auth *AuthServiceClient) LoginService(user types.User) (uint, string) {
 	return 0, ""
 }
 
-func NewAdminClient(config *koanf.Koanf) interfaces.AuthClient {
+func NewUserClient(config *koanf.Koanf) interfaces.AuthClient {
 
 	connection, err := grpc.Dial(config.String("userAuthUrl"), grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
