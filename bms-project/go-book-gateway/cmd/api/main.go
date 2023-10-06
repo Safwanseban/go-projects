@@ -9,7 +9,6 @@ func init() {
 }
 func main() {
 
-	appServer := di.InitializeApi()
-	appServer.Start()
+	di.InitializeApi().Start()
 
 }

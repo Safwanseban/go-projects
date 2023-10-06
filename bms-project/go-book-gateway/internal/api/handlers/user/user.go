@@ -1,9 +1,10 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
-	interfaces "github.com/Safwanseban/go-book-gateway/internal/client/interface"
+	interfaces "github.com/Safwanseban/go-book-gateway/internal/client/interfaces"
 	"github.com/Safwanseban/go-book-gateway/internal/types"
 	"github.com/gin-gonic/gin"
 )
@@ -30,6 +31,7 @@ func (s *AuthHandler) Register(ctx *gin.Context) {
 		return
 	}
 	resp, err := s.AuthClient.SignUpUser(user)
+	fmt.Println(resp)
 	if err != nil {
 		ctx.JSON(int(resp.Status), gin.H{
 			"message": "internal server error",

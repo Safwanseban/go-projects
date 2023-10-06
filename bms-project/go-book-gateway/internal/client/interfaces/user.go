@@ -8,4 +8,5 @@ import (
 type AuthClient interface {
 	SignUpUser(types.User) (*pb.RegisterResponse, error)
 	LoginService(types.User) (uint, string)
+	SystemAvailableCheck() (*pb.SystemResponse, error)
 }

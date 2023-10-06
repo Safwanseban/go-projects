@@ -1,2 +1,2 @@
 Port: ":3000"
-userAuthUrl: "localhost:5051"
+userAuthUrl: ":50051"
