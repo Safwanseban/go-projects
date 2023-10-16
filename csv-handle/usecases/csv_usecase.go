@@ -1,7 +1,8 @@
 package usecases
 
 import (
-	"csv-handle/client"
+	client "csv-handle/client/interfaces"
+	"csv-handle/usecases/interfaces"
 	"csv-handle/utils"
 	"encoding/csv"
 	"errors"
@@ -13,10 +14,10 @@ import (
 )
 
 type CsvUsecases struct {
-	Svc *client.AwsS3Client
+	Svc client.AwsClientI
 }
 
-func NewCsvUsecase(client *client.AwsS3Client) *CsvUsecases {
+func NewCsvUsecase(client client.AwsClientI) interfaces.CsvUsecase {
 	return &CsvUsecases{
 		Svc: client,
 	}

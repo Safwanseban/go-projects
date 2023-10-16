@@ -1,7 +1,8 @@
 package controllers
 
 import (
-	"csv-handle/usecases"
+	"csv-handle/controllers/interfaces"
+	usecase "csv-handle/usecases/interfaces"
 	"net/http"
 	"strconv"
 
@@ -9,10 +10,10 @@ import (
 )
 
 type CsvController struct {
-	csvUsecases *usecases.CsvUsecases
+	csvUsecases usecase.CsvUsecase
 }
 
-func NewCsvController(csvUsecase *usecases.CsvUsecases) *CsvController {
+func NewCsvController(csvUsecase usecase.CsvUsecase) interfaces.CsvControllerI {
 
 	return &CsvController{
 		csvUsecases: csvUsecase,
@@ -37,7 +38,8 @@ func (c *CsvController) UploadController(ctx *gin.Context) {
 		return
 	}
 	result := c.csvUsecases.ValidateCsv(files)
-	if result != nil {
+
+	if len(result) > 0 {
 		ctx.JSON(http.StatusMultiStatus, gin.H{
 			"message": "some validation issues in csv files",
 			"result":  result,

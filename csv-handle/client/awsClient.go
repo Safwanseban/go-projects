@@ -1,6 +1,7 @@
 package client
 
 import (
+	"csv-handle/client/interfaces"
 	"io"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -12,7 +13,7 @@ type AwsS3Client struct {
 	svc *s3.S3
 }
 
-func NewAwsClient() *AwsS3Client {
+func NewAwsClient() interfaces.AwsClientI {
 
 	region := "ap-northeast-1"
 	sess := session.Must(session.NewSession(&aws.Config{Region: &region}))

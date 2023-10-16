@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"csv-handle/controllers"
+	"csv-handle/controllers/interfaces"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,7 +10,7 @@ type AppServer struct {
 	engine *gin.Engine
 }
 
-func NewAppServer(csvhandler *controllers.CsvController) *AppServer {
+func NewAppServer(csvhandler interfaces.CsvControllerI) *AppServer {
 
 	engine := gin.Default()
 	engine.POST("/upload-files", csvhandler.UploadController)
