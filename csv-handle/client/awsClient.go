@@ -29,6 +29,7 @@ func (awsC *AwsS3Client) UploadToS3(bucket, key string, data io.ReadSeeker) erro
 		Key:    &key,
 		Body:   data,
 	})
+
 	if err != nil {
 
 		return err

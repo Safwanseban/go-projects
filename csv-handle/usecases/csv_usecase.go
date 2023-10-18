@@ -56,18 +56,18 @@ func (cu *CsvUsecases) BatchUpload(files []*multipart.FileHeader) ([]map[string]
 
 }
 
-func (cu *CsvUsecases) ValidateCsv(files []*multipart.FileHeader) []map[string]any {
+func (cu *CsvUsecases) ValidateCsv(files []*multipart.FileHeader) ([]map[string]any, []map[string]any) {
 	result := make([]map[string]any, 0)
+	fileStatus := make([]map[string]any, 0)
 	wg := sync.WaitGroup{}
 	for _, file := range files {
 		wg.Add(1)
 		go func(file *multipart.FileHeader, wg *sync.WaitGroup) {
 			defer wg.Done()
-			count := 0
 			oFile, err := file.Open()
 			if err != nil {
 				result = utils.ManageResult(result, file.Filename, "failed", errors.New("file opening error"))
-				// errorChan <- err
+
 				return
 			}
 			defer oFile.Close()
@@ -76,45 +76,62 @@ func (cu *CsvUsecases) ValidateCsv(files []*multipart.FileHeader) []map[string]a
 
 			if err != nil {
 				result = utils.ManageResult(result, file.Filename, "failed", errors.New("error while reading the csv file"))
-				// errorChan <- err
+
 				return
 			}
+			errorCount := 0
 			validHeader := validHeadersAndPositions(headers)
 			fmt.Println(validHeader)
-
+			row := 1
 			for {
-
 				data, err := reader.Read()
-				count++
+				row++
 				if err != nil {
 					break
 				}
-				if count > 1 {
-					for i, field := range data {
 
-						if header, ok := validHeader[i]; ok {
-							err := ListofHeadersAndValidations(header, field)
-							if err != nil {
-								result = utils.ManageResult(result, file.Filename, "validation failed on row "+strconv.Itoa(count), err)
-							}
+				for i, field := range data {
+
+					if header, ok := validHeader[i]; ok {
+						err := ListofHeadersAndValidations(header, field)
+						if err != nil {
+							errorCount++
+							result = utils.ManageResult(result, file.Filename, "validation failed on row "+strconv.Itoa(row), err)
 						}
-						// err := ListofHeadersAndValidations(headers[i], field)
-						// fmt.Println(err)
-
 					}
 				}
-
 			}
+			if errorCount == 0 {
+				if err := uploadFiles(file, cu); err != nil {
+					result = utils.ManageResult(result, file.Filename, "uploading failed", err)
+				}
+				fileStatus = append(fileStatus, map[string]any{
+					"fileName": fmt.Sprintf("%s has been uploaded", file.Filename),
+				})
+				return
+			}
+			fileStatus = append(fileStatus, map[string]any{
+				"fileName": fmt.Sprintf("%s have some errors ", file.Filename),
+			})
 
 		}(file, &wg)
 		wg.Wait()
-		// if err, ok := <-errorChan; ok {
-		// 	return err
-		// }
-		// return nil
-
 	}
-	return result
+	return result, fileStatus
+}
+
+func uploadFiles(file *multipart.FileHeader, cu *CsvUsecases) error {
+	fileName := strings.Split(file.Filename, ".")
+	extension := fileName[len(fileName)-1]
+	ofile, err := file.Open()
+	if err != nil {
+		return errors.New("file opening error")
+	}
+	defer ofile.Close()
+	if err := cu.Svc.UploadToS3("csvhandlebucket", utils.NewUUIDFile(extension), ofile); err != nil {
+		return errors.New("error uploading file")
+	}
+	return nil
 }
 
 func ListofHeadersAndValidations(header, field string) error {
@@ -132,16 +149,16 @@ func ListofHeadersAndValidations(header, field string) error {
 		}
 		return nil
 	}
-	headerList := map[string]func(string) error{
+	headerList := map[string]any{
 
 		"firstname": firstName,
 
 		"lastname": lastName,
 	}
 
-	if val, ok := headerList[strings.ToLower(header)]; ok {
+	if val, ok := headerList[strings.ReplaceAll(strings.ToLower(header), " ", "")]; ok {
 
-		return val(field)
+		return val.(func(string) error)(field)
 	}
 
 	return nil
@@ -155,7 +172,7 @@ func validHeadersAndPositions(headers []string) map[int]string {
 	}
 
 	for pos, header := range headers {
-		if headersList[strings.ToLower(header)] {
+		if headersList[strings.ReplaceAll(strings.ToLower(header), " ", "")] {
 			validHeader[pos] = header
 		}
 	}

@@ -4,11 +4,15 @@ import (
 	"csv-handle/controllers/interfaces"
 	usecase "csv-handle/usecases/interfaces"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
+type JsonResponse struct {
+	Message      string      `json:"message"`
+	FileStatus   interface{} `json:"fileStatus"`
+	ErrorResults interface{} `json:"errorResults,omitempty"`
+}
 type CsvController struct {
 	csvUsecases usecase.CsvUsecase
 }
@@ -37,20 +41,12 @@ func (c *CsvController) UploadController(ctx *gin.Context) {
 		})
 		return
 	}
-	result := c.csvUsecases.ValidateCsv(files)
-
-	if len(result) > 0 {
+	result, uploadedFiles := c.csvUsecases.ValidateCsv(files)
+	if len(result) > 0 || len(uploadedFiles) > 0 {
 		ctx.JSON(http.StatusMultiStatus, gin.H{
-			"message": "some validation issues in csv files",
-			"result":  result,
-		})
-		return
-	}
-	results, count := c.csvUsecases.BatchUpload(files)
-	if count >= 1 {
-		ctx.JSON(http.StatusMultiStatus, gin.H{
-			"message": strconv.Itoa(count) + " files are not completed uploading",
-			"results": results,
+			"message":      "some validation issues in csv files",
+			"fileStatus":   uploadedFiles,
+			"errorResults": result,
 		})
 		return
 	}

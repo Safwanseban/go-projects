@@ -2,7 +2,7 @@ package models
 
 
 
-// type FileQuries struct{
+type FileDetails struct{
 
-// 	File1 
-// }
+	
+}
