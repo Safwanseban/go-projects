@@ -2,18 +2,28 @@ package services
 
 import (
 	"context"
+	"database/sql"
+	"errors"
+	"fmt"
 	"net/http"
+	"strconv"
 
+	db "github.com/Safwanseban/go-book-autha/internal/repo"
+	"github.com/Safwanseban/go-book-autha/internal/types"
 	"github.com/Safwanseban/go-book-autha/internal/user/pb"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 type AuthServer struct {
 	pb.UnimplementedAuthServiceServer
+	query *db.Queries
 }
 
-func NewAuthService() pb.AuthServiceServer {
+func NewAuthService(queries *db.Queries) pb.AuthServiceServer {
 
-	return &AuthServer{}
+	return &AuthServer{
+		query: queries,
+	}
 }
 
 // CheckSystem implements pb.AuthServiceServer.
@@ -30,14 +40,42 @@ func (*AuthServer) mustEmbedUnimplementedAuthServiceServer() {
 }
 
 // Login implements pb.AuthServiceServer.
-func (*AuthServer) Login(context.Context, *pb.LoginRequest) (*pb.LoginResponse, error) {
-	panic("unimplemented")
+func (a *AuthServer) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResponse, error) {
+
+	user, err := a.query.GetUserByEmail(ctx, req.Email)
+	if err != nil {
+		return &pb.LoginResponse{
+			Status: http.StatusInternalServerError,
+		}, err
+	}
+	fmt.Println(user)
+	return &pb.LoginResponse{
+		Status: http.StatusOK,
+	}, nil
 }
 
 // Register implements pb.AuthServiceServer.
-func (*AuthServer) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
+func (a *AuthServer) Register(ctx context.Context, req *pb.RegisterRequest) (*pb.RegisterResponse, error) {
+	var user types.User
+	user.Password = req.Password
+	if err := user.HashPassword(); err != nil {
+		return nil, errors.New("error hashing password")
+
+	}
+	id, err := a.query.CreateUser(ctx, db.CreateUserParams{
+		Username:    req.Username,
+		Email:       req.Email,
+		Password:    user.Password,
+		PhoneNumber: sql.NullString{String: req.Phonenumber},
+	})
+
+	if err != nil {
+		return nil, errors.New("error creating user")
+	}
+
 	return &pb.RegisterResponse{
-		Id:     1,
-		Status: 200,
+		Result: map[string]*anypb.Any{"id": {Value: []byte(strconv.Itoa(int(id)))},
+			"status": {Value: []byte("success")},
+		},
 	}, nil
 }

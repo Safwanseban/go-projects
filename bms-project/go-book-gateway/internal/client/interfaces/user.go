@@ -6,7 +6,7 @@ import (
 )
 
 type AuthClient interface {
-	SignUpUser(types.User) (*pb.RegisterResponse, error)
-	LoginService(types.User) (uint, string)
+	SignUpUser(types.User) (map[string]any, error)
+	LoginService(types.User) (*pb.LoginResponse, error)
 	SystemAvailableCheck() (*pb.SystemResponse, error)
 }

@@ -16,6 +16,7 @@ func NewAppServer(userHandler *handlers.AuthHandler) *AppServer {
 	userAuth := srv.Group("/auth")
 	{
 		userAuth.POST("/register", userHandler.Register)
+		userAuth.POST("/login", userHandler.Login)
 		srv.GET("/check-system", func(ctx *gin.Context) {
 			res, err := userHandler.AuthClient.SystemAvailableCheck()
 			if err != nil {
@@ -35,7 +36,6 @@ func NewAppServer(userHandler *handlers.AuthHandler) *AppServer {
 }
 
 func (app *AppServer) Start() {
-
 	if err := app.engine.Run(":3000"); err != nil {
 		panic("error initializing server")
 	}

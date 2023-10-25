@@ -27,31 +27,40 @@ func (auth *AuthServiceClient) SystemAvailableCheck() (*pb.SystemResponse, error
 }
 
 // SignUpUser implements interfaces.AuthClient.
-func (auth *AuthServiceClient) SignUpUser(user types.User) (*pb.RegisterResponse, error) {
+func (auth *AuthServiceClient) SignUpUser(user types.User) (map[string]any, error) {
+	result := make(map[string]any)
 	fmt.Println("here")
 	resp, err := auth.AuthClient.Register(context.Background(), &pb.RegisterRequest{
-		// Username:    user.UserName,
-		Email:    user.Email,
-		Password: user.Password,
-		// Phonenumber: user.Password,
+		Username:    user.UserName,
+		Email:       user.Email,
+		Password:    user.Password,
+		Phonenumber: user.PhoneNumber,
 	})
-	fmt.Println(resp, err)
-	if err != nil {
-		return resp, err
 
+	if err != nil {
+		return nil, err
 	}
-	return resp, nil
+	result = map[string]any{
+		"id":     resp.Result["id"].String(),
+		"status": resp.Result["status"].String(),
+	}
+	return result, nil
 
 }
 
 // LoginService implements interfaces.AuthClient.
-func (auth *AuthServiceClient) LoginService(user types.User) (uint, string) {
+func (auth *AuthServiceClient) LoginService(user types.User) (*pb.LoginResponse, error) {
 
-	auth.AuthClient.Login(context.Background(), &pb.LoginRequest{
+	resp, err := auth.AuthClient.Login(context.Background(), &pb.LoginRequest{
 		Email:    user.Email,
 		Password: user.Password,
 	})
-	return 0, ""
+	if err != nil {
+		return nil, err
+
+	}
+
+	return resp, nil
 }
 
 func NewUserClient(config *koanf.Koanf) interfaces.AuthClient {
